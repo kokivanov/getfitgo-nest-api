@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id Int @id
+  description String?
+  priviligiles Int @db.SmallInt @default(0)
+  metadata Bytes? @db.ByteA
+  users User[]
+
+  @@map("Roles")
+}
+
+model Country {
+  id Int @id
+  name String
+  code String @db.VarChar(3)
+
+  usersPreferred User[] @relation("preferef_country_r")
+  usersCurrent User[] @relation("current_country_r")
+  countryCities Cities[] @relation("country_city")
+
+  @@map("Countries")
+}
+
+model Cities {
+  id Int @id
+  name String
+  code String @db.VarChar(32)
+
+  usersPreferred User[] @relation("preferef_city_c")
+  usersCurrent User[] @relation("current_city_c")
+  countryCity Country @relation("country_city", fields: [countryId], references: [id])
+  countryId Int
+
+  @@map("City")
+}
+
+model User {
+  id Int @id
+  reg_timestamp DateTime @default(now())
+  email String @unique
+  user_name String
+  login_hash String
+  phone_number String
+  birthday DateTime
+  first_name String?
+  last_name String?
+  middle_name String?
+  
+  role Role @relation(fields: [roleId], references: [id])
+  roleId Int
+
+  is_subscribed Boolean @default(false)
+  score Int @default(0)
+  bio String? @db.VarChar(4056)
+  preferredCountry Country? @relation("preferef_country_r", fields: [preferred_country_id], references: [id])
+  preferred_country_id Int?
+  preferredCity Cities? @relation("preferef_city_c", fields: [preferred_city_id], references: [id])
+  preferred_city_id Int?
+  currentCountry Country? @relation("current_country_r",fields: [current_country_id], references: [id])
+  current_country_id Int?
+  currentCity Cities? @relation("current_city_c", fields: [current_city_id], references: [id])
+  current_city_id Int?
+  public_fields Int @default(0)
+  metadata Bytes @db.ByteA
+  updated_at DateTime @updatedAt
+}
+
+model Club {
+  id Int @id
+  
+}
