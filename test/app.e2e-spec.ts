@@ -1,29 +1,50 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import * as pactum from 'pactum'
 import { AppModule } from './../src/app.module';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from './../src/prisma/prisma.service';
+import { GenerateCities } from "./utils"
 
-describe('AppController (e2e)', () => {
+const APP_VER = require("../package.json").version;
+
+const GATEWAY_URL = "http://localhost:3333";
+
+describe('Get-fit-go API (e2e)', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+    const moduelRef = await Test.createTestingModule({
+      imports: [AppModule]
     }).compile();
 
 
-    app = moduleFixture.createNestApplication();
+    app = moduelRef.createNestApplication();
     await app.init();
     await app.listen(3333);
 
-    const prisma = app.get(PrismaService)
+    prisma = app.get(PrismaService)
+    GenerateCities(prisma)
+    pactum.request.setBaseUrl(GATEWAY_URL);
   }); 
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  afterAll(async () => {
+    await app.close();
+  })
+
+  describe('Uauthorized user', () => {
+    describe('Auth', () => {
+
+    })
+
+    describe('Forbidden resources', () => {
+
+    })
+
+    describe('Ping', () => {
+      it('Should return current version', () => {
+        pactum.spec().get('/version').expectBodyContains(APP_VER).expectStatus(200)
+      })
+    })
   });
 });

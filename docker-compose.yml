@@ -4,8 +4,6 @@ services:
     image: postgres:alpine3.17
     ports:
       - 5435:5432
-    networks:
-      - APINetwork
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123pswd
@@ -14,8 +12,6 @@ services:
     image: postgres:alpine3.17
     ports:
       - 5434:5432
-    networks:
-      - APINetwork
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123pswd

@@ -1,0 +1,15 @@
+{
+    "token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+    "user" : {
+    "id" : 1548366448547518,
+    "email" : "user@example.com",
+    "username" : "Josh",
+    "phone_number" : "+458066895245",
+    "birthday" : 1680111685912,
+    "first_name" : "Aeran",
+    "last_name" : "Jehaz",
+    "role" : "Casual user",
+    "public_fields" : 19
+    }
+}
+    

@@ -1,5 +1,5 @@
-import { Controller } from '@nestjs/common';
-import { loginUserDto, registerUserDto } from './dto/';
+import { Body, ClassSerializerInterceptor, Controller, Post, Req, UseInterceptors } from '@nestjs/common';
+import { UserEntity, loginUserDto, registerUserDto } from './dto/';
 import { AuthService } from './auth.service';
 
 
@@ -7,12 +7,25 @@ import { AuthService } from './auth.service';
 export class AuthController {
     constructor(private authService: AuthService){}
     
-    async register(dto: registerUserDto) {
-        return this.authService.register(dto)
+    @Post('/local/register')
+    async register(@Req() req, @Body() dto: registerUserDto){
+        return await this.authService.register(dto)
     }
 
-    async login(dto: loginUserDto) {
-        return this.authService.authorize(dto)
+    @Post('/local/login')
+    async login(@Body() dto: loginUserDto) {
+
+        return await this.authService.login(dto)
+    }
+
+    @Post('/refresh')
+    async refresh() {
+
+    }
+
+    @Post('/logout')
+    async logout() {
+
     }
 
 }
