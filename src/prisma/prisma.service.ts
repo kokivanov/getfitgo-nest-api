@@ -18,14 +18,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     }
     async onModuleInit() {
         await this.$connect();
-    }
-
-    
-
-    // TODO
-    cleanDb() {
-        return this.$transaction([
-            
-        ]);
+        
+        try {
+            await this.role.create({data:{
+                name: "User",
+                id: 0,
+                description: "Basic role for every new user"
+            }});
+        } catch {}
     }
 }

@@ -12,6 +12,7 @@ datasource db {
 
 model Role {
   id Int @id @default(autoincrement())
+  name String
   description String?
   priviligiles Int @db.SmallInt @default(0)
   metadata Bytes? @db.ByteA
@@ -56,10 +57,10 @@ model User {
   hash String
   hashedRt String?
   role Role? @relation(fields: [roleId], references: [id])
-  roleId Int?
+  roleId Int? @default(0)
   is_subscribed Boolean @default(false)
   score Int @default(0)
-  bio String? @db.VarChar(4056)
+  bio String? @db.VarChar(4056) @default("")
   preferredCountry Country? @relation("preferef_country_r", fields: [preferred_country_id], references: [id])
   preferred_country_id BigInt?
   preferredCity City? @relation("preferef_city_c", fields: [preferred_city_id], references: [id], onDelete: SetNull)
@@ -71,4 +72,6 @@ model User {
   public_fields Int @default(0)
   metadata Bytes? @db.ByteA
   updated_at DateTime @updatedAt
+
+  @@map("Users")
 }

@@ -7,7 +7,6 @@ export class AppController {
     @HttpCode(200)
     @Get('/version')
     GetVersion() {
-      console.log(new Date())
       return this.appService.GetVersion()
     }
 }
