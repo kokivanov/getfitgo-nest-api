@@ -5,17 +5,17 @@ import { Request } from "express";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class RtStrategy extends PassportStrategy(Strategy, 'jwt'){
+export class RtStrategy extends PassportStrategy(Strategy, 'jwt-rt'){
     constructor() {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: env['JWT_SECRET'],
+            secretOrKey: env['JWT_SECRET_RT'],
             passReqToCallback: true,
         })
     }
 
     validate(req: Request, payload: any) {
-        const refreshToken = req.get('authorization').replace('Bearer', '').trim()
-        return {...payload, refreshToken}
+        const rt_token = req.get('authorization').replace('Bearer', '').trim()
+        return {...payload, rt_token}
     }
 }

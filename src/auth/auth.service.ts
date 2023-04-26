@@ -17,7 +17,8 @@ export class AuthService {
     constructor(private jwt: JwtService, private config: ConfigService, private prisma: PrismaService, private uservice: UserService){}
     
     private worker_id = this.config.get('WORKER_ID', 0)
-    
+
+
     async registerLocal(userDto: registerUserDto) {
         if (new Date(userDto.birthday) < subYears(new Date(), 120) || new Date(userDto.birthday) > subYears(new Date(), 3)) throw new BadRequestException("You must be at least 3 years old or younger than 120")
         
@@ -37,7 +38,6 @@ export class AuthService {
             if(!await argon.verify(user.hash, userDto.password)) throw new ForbiddenException({message : "Invalid credentials"})
 
             const tokens = await this.signTokens(user.id, user.email)
-            await this.updateRtHash(user.id, tokens.refresh_token)
 
             const a = new UserResponse(user);
             return { ...tokens, user: { ...a } }
@@ -48,12 +48,15 @@ export class AuthService {
         
     }
     
-    async logout() {
-        
+    async logout(userID : string) {
+        await this.prisma.user.update({ where: { id: BigInt(`${userID}`) }, data: { hashedRt : null}})
     }
 
     async refresh(RTDto: RTDto) {
+        const user = (await this.prisma.user.findUnique({where: {id: BigInt(`${RTDto.id}`)}, select : {hashedRt: true, email: true}}))
         
+        if (!(await argon.verify(user.hashedRt, RTDto.rt_token))) throw new ForbiddenException({message: "Refresh token is invalid."})
+        return await this.signTokens(RTDto.id, user.email)
     }
 
     async hashString(data: string) {
@@ -69,7 +72,7 @@ export class AuthService {
         )
     }
 
-    async signTokens(userID: BigInt, email: string) {
+    async signTokens(userID: string | bigint, email: string) {
         const payload = {
             sub: userID.toString(),
             email,
@@ -79,6 +82,8 @@ export class AuthService {
             await this.makeToken(payload, JWT_EXPITE_TIMEOUT, this.config.get('JWT_SECRET')),
             await this.makeToken(payload, JWT_REFRESH_EXPITE_TIMEOUT, this.config.get('JWT_SECRET_RT'))
         ]
+
+        await this.updateRtHash(BigInt(`${userID}`), rt)
 
         return {
             token: at,

@@ -1,5 +1,5 @@
 export class RTDto {
-    sub: number
-    iat: number
-    exp: number
+    id: string
+    rt_token: string
+    exp: string
 }
