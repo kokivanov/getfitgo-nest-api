@@ -1,14 +1,21 @@
+import { ApiProperty } from '@nestjs/swagger';
 const TIMESTAMP_OFFSET = BigInt(`${20}`)
 const INTERNAL_ID_MASK = BigInt(`${0b11111111110000000000}`)
 const INTERNAL_ID_OFFSET = BigInt(`${10}`)
 const CONTENT_TYPE_MASK = BigInt(`${0b1111111111}`)
 
 export class ID {
+    @ApiProperty()
     timestamp: bigint
+    @ApiProperty()
     internal_id: bigint
+    @ApiProperty()
     content_type: bigint
-    incrementer: bigint
 
+    @ApiProperty({
+        type: BigInt,
+        description: "ID of an object, it consists of 3 parts: creation timestamp in ms, ID of inernat container with application and content type of object."
+    })
     value: bigint
 
     constructor(timestamp: number | bigint, internal_id: number | bigint, content_type: number | bigint) {

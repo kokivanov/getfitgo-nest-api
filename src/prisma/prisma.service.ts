@@ -1,6 +1,7 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
+import { Authorities } from 'src/common';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
@@ -26,5 +27,16 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
                 description: "Basic role for every new user"
             }});
         } catch {}
+
+        //TODO: REMOVE
+        try {
+            await this.role.create({data:{
+                name: "Superuser",
+                id: 1,
+                description: "Superuser role",
+                priviligiles: Authorities.ALL
+            }});
+        } catch {
+        }
     }
 }

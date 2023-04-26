@@ -14,7 +14,7 @@ model Role {
   id Int @id @default(autoincrement())
   name String
   description String?
-  priviligiles Int @db.SmallInt @default(0)
+  priviligiles BigInt @default(0)
   metadata Bytes? @db.ByteA
   users User[]
 

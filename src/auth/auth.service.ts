@@ -2,14 +2,14 @@ import { BadRequestException, ForbiddenException, Injectable, InternalServerErro
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { loginUserDto, registerUserDto, RTDto } from './dto';
-import { JWT_EXPITE_TIMEOUT, JWT_REFRESH_EXPITE_TIMEOUT } from 'src/common';
+import { JWT_EXPITE_TIMEOUT, JWT_REFRESH_EXPITE_TIMEOUT, UserEntity } from 'src/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as argon from 'argon2' 
 import { ID } from '../common/abs/id.object';
 import { subYears } from 'date-fns';
-import { UserResponse } from './dto/user.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { UserService } from '../user/user.service';
+import { TokenizedUserEntity } from 'src/common/abs/tokenizedUser.dto';
 
 
 @Injectable()
@@ -24,23 +24,23 @@ export class AuthService {
         
         const uID = new ID(Date.now(), this.worker_id, 0);
         const hash = await this.hashString(userDto.password)
-        const tokens = await this.signTokens(uID.value, userDto.email)
+        const tokens = await this.signTokens(uID.value)
         const hashRt = await argon.hash(tokens.refresh_token);
-        const user = await this.createUser(userDto, uID, hash, hashRt);
-        const a = new UserResponse(user);
-
-        return {...tokens, user: {...a}};
+        const _user = await this.createUser(userDto, uID, hash, hashRt);
+        
+        const user = new UserEntity(_user);
+        return new TokenizedUserEntity({...tokens, user})
     }
 
     async loginLocal(userDto: loginUserDto) {
         try{
-            const user = await this.uservice.findUser(userDto)
-            if(!await argon.verify(user.hash, userDto.password)) throw new ForbiddenException({message : "Invalid credentials"})
+            const _user = new UserEntity(await this.uservice.findUser(userDto))
+            if(!await argon.verify(_user.hash, userDto.password)) throw new ForbiddenException({message : "Invalid credentials"})
 
-            const tokens = await this.signTokens(user.id, user.email)
-
-            const a = new UserResponse(user);
-            return { ...tokens, user: { ...a } }
+            const tokens = await this.signTokens(_user.id)
+            
+            await this.updateRtHash(BigInt(`${_user.id}`), tokens.refresh_token)
+            return new TokenizedUserEntity({...tokens, user: _user})
         } catch (e) {
             if (e instanceof NotFoundException) throw new ForbiddenException({message : "Invalid credentials"})
             throw e
@@ -56,7 +56,9 @@ export class AuthService {
         const user = (await this.prisma.user.findUnique({where: {id: BigInt(`${RTDto.id}`)}, select : {hashedRt: true, email: true}}))
         
         if (!(await argon.verify(user.hashedRt, RTDto.rt_token))) throw new ForbiddenException({message: "Refresh token is invalid."})
-        return await this.signTokens(RTDto.id, user.email)
+        const tokens = await this.signTokens(RTDto.id)
+        await this.updateRtHash(BigInt(`${RTDto.id}`), tokens.refresh_token)
+        return tokens
     }
 
     async hashString(data: string) {
@@ -72,10 +74,9 @@ export class AuthService {
         )
     }
 
-    async signTokens(userID: string | bigint, email: string) {
+    async signTokens(userID: string | bigint) {
         const payload = {
-            sub: userID.toString(),
-            email,
+            sub: userID.toString()
         }
          
         const [at, rt] = [
@@ -83,7 +84,7 @@ export class AuthService {
             await this.makeToken(payload, JWT_REFRESH_EXPITE_TIMEOUT, this.config.get('JWT_SECRET_RT'))
         ]
 
-        await this.updateRtHash(BigInt(`${userID}`), rt)
+       
 
         return {
             token: at,
