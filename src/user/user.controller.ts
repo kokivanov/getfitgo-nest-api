@@ -1,8 +1,7 @@
-import { Controller, Get, UseGuards, UseInterceptors, ClassSerializerInterceptor, HttpCode, HttpStatus } from '@nestjs/common';
-import { Authorities, Authority, GetUser, UserEntity } from 'src/common/';
+import { Controller, Get, UseInterceptors, ClassSerializerInterceptor, HttpCode, HttpStatus } from '@nestjs/common';
+import { GetUser, RequestErrorDescriptions, RequestReturnsDescription, UserEntity } from 'src/common/';
 import { UserService } from './user.service';
-import { ApiBearerAuth, ApiTags, ApiOkResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { AuthorityGuard } from '../common';
+import { ApiBearerAuth, ApiTags, ApiOkResponse, ApiUnauthorizedResponse, ApiForbiddenResponse } from '@nestjs/swagger';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @ApiBearerAuth()
@@ -16,10 +15,10 @@ export class UserController {
 
     @ApiOkResponse({
         type: UserEntity,
-        description: "Returns object of currently loged in user."
+        description: RequestReturnsDescription.GetMeResponse
     })
     @ApiUnauthorizedResponse({
-        description: "Perhaps your access oke expired or corrupted."
+        description: RequestErrorDescriptions.ExpiredToken
     })
     @UseInterceptors(ClassSerializerInterceptor)
     @HttpCode(HttpStatus.OK)

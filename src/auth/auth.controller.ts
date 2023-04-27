@@ -1,7 +1,7 @@
 import { Body, ClassSerializerInterceptor, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import { loginUserDto, registerUserDto } from './dto/';
 import { AuthService } from './auth.service';
-import { Public, JwtGuardRt, JwtGuard, GetUser, Tokens } from '../common';
+import { Public, JwtGuardRt, JwtGuard, GetUser, Tokens, RequestSuccessDescription, RequestReturnsDescription } from '../common';
 import { Request } from 'express';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { TokenizedUserEntity } from 'src/common/abs/tokenizedUser.dto';
@@ -14,13 +14,24 @@ import { TokenizedUserEntity } from 'src/common/abs/tokenizedUser.dto';
 export class AuthController {
     constructor(private authService: AuthService) { }
 
+    @ApiOkResponse({
+        description: RequestReturnsDescription.AuthGatewaysResponse,
+        schema: { 
+            example: {
+                "Public authorization gateways": [
+                    "https://www.example.com/local/register",
+                    "https://www.example.com//local/login",
+                ]
+            }
+        }
+    })
     @Public()
     @Get()
     async getRoutes(@Req() req: Request) {
         const base = req.protocol + req.get('Host');
 
         return {
-            "Public gateways": [
+            "Public authorization gateways": [
                 base + "/local/register",
                 base + "/local/login",
             ]
@@ -28,7 +39,7 @@ export class AuthController {
     }
 
     @ApiCreatedResponse({
-        description: "Your profile was successfully created.",
+        description: RequestReturnsDescription.RegisterReturn,
         type: TokenizedUserEntity
     })
     @UseInterceptors(ClassSerializerInterceptor)
@@ -40,7 +51,7 @@ export class AuthController {
     }
 
     @ApiCreatedResponse({
-        description: "You were successfully loged in.",
+        description: RequestReturnsDescription.LoginReturn,
         type: TokenizedUserEntity
     })
     @UseInterceptors(ClassSerializerInterceptor)
@@ -53,7 +64,7 @@ export class AuthController {
 
     @ApiBearerAuth()
     @ApiOkResponse({
-        description: "You were successfully loged out.",
+        description: RequestReturnsDescription.RefreshReturn,
         type: Tokens
     })
     @Public()
@@ -66,7 +77,7 @@ export class AuthController {
 
     @ApiBearerAuth()
     @ApiOkResponse({
-        description: "You were successfully loged out.",
+        description: RequestSuccessDescription.LogOutResponse,
         type: null
     })
     @HttpCode(HttpStatus.OK)

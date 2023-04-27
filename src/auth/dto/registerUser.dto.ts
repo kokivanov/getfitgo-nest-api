@@ -1,8 +1,8 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEmail, IsString, IsNotEmpty, MinLength, MaxLength, IsPhoneNumber, Matches, Min, Max, IsNumber, IsDate, isString, IsDateString } from 'class-validator';
 
 export class registerUserDto {
-    @ApiPropertyOptional({
+    @ApiProperty({
         type: String,
         description: "E-mail of user, provided to register"
     })
@@ -12,7 +12,7 @@ export class registerUserDto {
     @MaxLength(360)
     email: string
 
-    @ApiPropertyOptional({
+    @ApiProperty({
         type: String,
         description: "Password of user, provided to register"
     })
@@ -23,7 +23,7 @@ export class registerUserDto {
     @MaxLength(4096)
     password: string
 
-    @ApiPropertyOptional({
+    @ApiProperty({
         type: String,
         description: "User's nickname, provided to register"
     })
@@ -33,7 +33,7 @@ export class registerUserDto {
     @MaxLength(32)
     user_name: string
 
-    @ApiPropertyOptional({
+    @ApiProperty({
         type: String,
         description: "E-mail of user, provided to register"
     })
@@ -43,7 +43,7 @@ export class registerUserDto {
     @MaxLength(15)
     phone_number: string
     
-    @ApiPropertyOptional({
+    @ApiProperty({
         type: String,
         description: "Birtday date of user, represented as ISO8601 string, provided to register",
         example: "2023-04-26T12:13:09.957Z"

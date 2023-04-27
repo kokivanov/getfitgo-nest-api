@@ -16,7 +16,9 @@ async function bootstrap() {
   });
   const reflector = new Reflector()
   app.useGlobalGuards(new JwtGuard(reflector))
-
+  app.setGlobalPrefix('api')
+  app.getHttpAdapter().getInstance().disable('x-powered-by')
+ 
   const cfg = require('./../package.json')
   const config = new DocumentBuilder()
     .setTitle(cfg.name)

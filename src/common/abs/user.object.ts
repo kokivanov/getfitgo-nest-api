@@ -1,6 +1,6 @@
 import { Role } from ".prisma/client";
 import { Exclude, Transform } from "class-transformer";
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UserEntity {
     
@@ -36,11 +36,11 @@ export class UserEntity {
         type: String,
     })
     first_name: string 
-    @ApiProperty({
+    @ApiPropertyOptional({
         type: String,
     })
     last_name: string
-    @ApiProperty({
+    @ApiPropertyOptional({
         type: String,
     })
     middle_name: string
@@ -80,22 +80,22 @@ export class UserEntity {
     })
     bio: string | null
 
-    @ApiProperty({
+    @ApiPropertyOptional({
         type: String,
     })
     @Transform(({ value }) => value.name)
     preferred_country: string | bigint | null
-    @ApiProperty({
+    @ApiPropertyOptional({
         type: String,
     })
     @Transform(({ value }) => value.name)
     preferred_city: string | bigint | null
-    @ApiProperty({
+    @ApiPropertyOptional({
         type: String,
     })
     @Transform(({ value }) => value.name)
     current_country: string | bigint | null
-    @ApiProperty({
+    @ApiPropertyOptional({
         type: String,
     })
     @Transform(({ value }) => value.name)
