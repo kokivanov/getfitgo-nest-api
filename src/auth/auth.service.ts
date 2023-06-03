@@ -2,7 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, InternalServerErro
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { loginUserDto, registerUserDto, RTDto } from './dto';
-import { JWT_EXPITE_TIMEOUT, JWT_REFRESH_EXPITE_TIMEOUT, UserEntity } from 'src/common';
+import { ContentType, JWT_EXPITE_TIMEOUT, JWT_REFRESH_EXPITE_TIMEOUT, UserEntity } from 'src/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as argon from 'argon2' 
 import { ID } from '../common/abs/id.object';
@@ -22,7 +22,7 @@ export class AuthService {
     async registerLocal(userDto: registerUserDto) {
         if (new Date(userDto.birthday) < subYears(new Date(), 120) || new Date(userDto.birthday) > subYears(new Date(), 3)) throw new BadRequestException("You must be at least 3 years old or younger than 120")
         
-        const uID = new ID(Date.now(), this.worker_id, 0);
+        const uID = new ID(Date.now(), this.worker_id, ContentType.User);
         const hash = await this.hashString(userDto.password)
         const tokens = await this.signTokens(uID.value)
         const hashRt = await argon.hash(tokens.refresh_token);

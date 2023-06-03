@@ -11,67 +11,116 @@ datasource db {
 }
 
 model Role {
-  id Int @id @default(autoincrement())
-  name String
-  description String?
-  priviligiles BigInt @default(0)
-  metadata Bytes? @db.ByteA
-  users User[]
+  id           Int     @id @default(autoincrement())
+  name         String
+  description  String?
+  priviligiles BigInt  @default(0)
+  metadata     Bytes?  @db.ByteA
+  users        User[]
 
   @@map("Roles")
 }
 
 model Country {
-  id BigInt @id @default(autoincrement())
+  id   BigInt @id @default(autoincrement())
   name String
 
   usersPreferred User[] @relation("preferef_country_r")
-  usersCurrent User[] @relation("current_country_r")
-  countryCities City[] @relation("country_city")
+  usersCurrent   User[] @relation("current_country_r")
+  countryCities  City[] @relation("country_city")
 
   @@map("Countries")
 }
 
 model City {
-  id BigInt @id @default(autoincrement())
+  id        BigInt @id @default(autoincrement())
   countryId BigInt
-  name String
+  name      String
 
-  usersPreferred User[] @relation("preferef_city_c")
-  usersCurrent User[] @relation("current_city_c")
-  countryCity Country? @relation("country_city", fields: [countryId], references: [id], onDelete: Cascade)
+  usersPreferred User[]   @relation("preferef_city_c")
+  usersCurrent   User[]   @relation("current_city_c")
+  countryCity    Country? @relation("country_city", fields: [countryId], references: [id], onDelete: Cascade)
 
   @@map("Cities")
 }
 
 model User {
-  id BigInt @id
-  reg_timestamp DateTime @default(now())
-  email String @unique
-  user_name String @db.VarChar(256) @unique
-  phone_number String @db.VarChar(16) @unique
-  birthday DateTime
-  first_name String? @db.VarChar(256)
-  last_name String? @db.VarChar(256)
-  middle_name String? @db.VarChar(256)
-  hash String
-  hashedRt String?
-  role Role? @relation(fields: [roleId], references: [id])
-  roleId Int? @default(0)
-  is_subscribed Boolean @default(false)
-  score Int @default(0)
-  bio String? @db.VarChar(4056) @default("")
-  preferredCountry Country? @relation("preferef_country_r", fields: [preferred_country_id], references: [id])
+  id                   BigInt   @id
+  reg_timestamp        DateTime @default(now())
+  email                String   @unique
+  user_name            String   @unique @db.VarChar(256)
+  phone_number         String   @unique @db.VarChar(16)
+  birthday             DateTime
+  first_name           String?  @db.VarChar(256)
+  last_name            String?  @db.VarChar(256)
+  middle_name          String?  @db.VarChar(256)
+  hash                 String
+  hashedRt             String?
+  roleId               Int?     @default(0)
+  is_subscribed        Boolean  @default(false)
+  score                Int      @default(0)
+  bio                  String?  @default("") @db.VarChar(4056)
   preferred_country_id BigInt?
-  preferredCity City? @relation("preferef_city_c", fields: [preferred_city_id], references: [id], onDelete: SetNull)
-  preferred_city_id BigInt?
-  currentCountry Country? @relation("current_country_r",fields: [current_country_id], references: [id], onDelete: SetNull)
-  current_country_id BigInt?
-  currentCity City? @relation("current_city_c", fields: [current_city_id], references: [id], onDelete: SetNull)
-  current_city_id BigInt?
-  public_fields Int @default(0)
-  metadata Bytes? @db.ByteA
-  updated_at DateTime @updatedAt
+  preferred_city_id    BigInt?
+  current_country_id   BigInt?
+  current_city_id      BigInt?
+  public_fields        Int      @default(0)
+  metadata             Bytes?   @db.ByteA
+  updated_at           DateTime @updatedAt
+
+  role                 Role?    @relation(fields: [roleId], references: [id])
+  currentCity          City?    @relation("current_city_c", fields: [current_city_id], references: [id], onDelete: SetNull)
+  currentCountry       Country? @relation("current_country_r", fields: [current_country_id], references: [id], onDelete: SetNull)
+  preferredCity        City?    @relation("preferef_city_c", fields: [preferred_city_id], references: [id], onDelete: SetNull)
+  preferredCountry     Country? @relation("preferef_country_r", fields: [preferred_country_id], references: [id], onDelete: SetNull)
+  biometries Biometry[] @relation("biometries_fk")
+  vitals Vital[] @relation("vitals_fk")
+  journals Journal[] @relation("journals_fk")
+
 
   @@map("Users")
+}
+
+model Biometry {
+  id BigInt
+  author_id BigInt
+  created_at DateTime @default(now())
+  weight Float?
+  height Float?
+  fat_percent Float?
+  is_public Boolean @default(false)
+  updated_at DateTime @updatedAt
+
+  user User @relation("biometries_fk", fields: [author_id], references: [id], onDelete: Cascade)
+
+  @@id([id, author_id])
+  @@map("biometries")
+}
+
+model Vital {
+  id BigInt
+  author_id BigInt
+  created_at DateTime @default(now())
+  heartbeat Float?
+  pressure Float?
+  o2level Float?
+  is_public Boolean @default(false)
+
+  user User @relation("vitals_fk", fields: [author_id], references: [id], onUpdate: Cascade)
+  @@id([id, author_id])
+  @@map("vitals")
+}
+
+model Journal {
+  id BigInt
+  author_id BigInt
+  created_at DateTime @default(now())
+  calories_consumed Float?
+  calories_burned Float?
+  protein_consumed Float?
+  is_public Boolean @default(false)
+
+  user User @relation("journals_fk", fields: [author_id], references: [id], onUpdate: Cascade)
+  @@id([id, author_id])
+  @@map("journals")
 }

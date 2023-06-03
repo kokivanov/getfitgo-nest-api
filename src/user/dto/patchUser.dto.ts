@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, ValidateIf } from 'class-validator';
 
-export class PatchUserDto {
+export class patchUserDto {
 
     @ApiPropertyOptional({
         type: String,
@@ -36,22 +37,26 @@ export class PatchUserDto {
     @ApiPropertyOptional({
         type: String,
     })
-    preferred_country?: bigint
+    preferred_country_id?: bigint
     @ApiPropertyOptional({
         type: String,
     })
-    preferred_city?: bigint
+    preferred_city_id?: bigint
     @ApiPropertyOptional({
         type: String,
     })
-    current_country?: bigint
+    current_country_id?: bigint
     @ApiPropertyOptional({
         type: String,
     })
-    current_city?: bigint
+    current_city_id?: bigint
 
     @ApiPropertyOptional({
         type: Number,
     })
     public_fields?: number
+
+    @ValidateIf((o: patchUserDto) => !(o.bio != '' || o.birthday || o.current_city_id || o.current_country_id || o.first_name || o.last_name || o.middle_name || o.phone_number || o.preferred_city_id || o.preferred_country_id || o.public_fields || o.user_name))
+    @IsNotEmpty({message: "Must provide at least one of optional fields!"})
+    a: boolean
 }

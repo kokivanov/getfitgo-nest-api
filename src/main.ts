@@ -1,6 +1,6 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { ValidationPipe, VersioningType, ClassSerializerInterceptor } from '@nestjs/common';
 import { JwtGuard } from './common/guards';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
@@ -17,6 +17,7 @@ async function bootstrap() {
   const reflector = new Reflector()
   app.useGlobalGuards(new JwtGuard(reflector))
   app.setGlobalPrefix('api')
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector))
   app.getHttpAdapter().getInstance().disable('x-powered-by')
  
   const cfg = require('./../package.json')

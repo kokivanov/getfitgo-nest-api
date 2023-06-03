@@ -1,8 +1,9 @@
-import { Controller, Get, UseInterceptors, ClassSerializerInterceptor, HttpCode, HttpStatus } from '@nestjs/common';
-import { GetUser, RequestErrorDescriptions, RequestReturnsDescription, UserEntity } from 'src/common/';
+import { Controller, Get, UseInterceptors, ClassSerializerInterceptor, HttpCode, HttpStatus, Patch, Body, Req, Post } from '@nestjs/common';
+import { GetBody, GetUser, RequestErrorDescriptions, RequestReturnsDescription, UserEntity } from 'src/common/';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiTags, ApiOkResponse, ApiUnauthorizedResponse, ApiForbiddenResponse } from '@nestjs/swagger';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { patchUserDto } from './dto';
 
 @ApiBearerAuth()
 @ApiTags('Users')
@@ -25,5 +26,11 @@ export class UserController {
     @Get('/me')
     async getMe(@GetUser('sub') userId: any){
         return this.userService.getUser(userId)
+    }
+
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Post('/me')
+    async patchMe(@GetUser('sub') userId: any, @Body() dto: patchUserDto){
+        return this.userService.patchUser(userId, dto)
     }
 }

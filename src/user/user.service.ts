@@ -3,6 +3,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { UserCredentials } from 'src/auth/dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserEntity } from 'src/common/abs';
+import { patchUserDto } from './dto';
 
 @Injectable()
 export class UserService {
@@ -10,6 +11,18 @@ export class UserService {
 
     async getUser(userID : string): Promise<UserEntity> {
         return new UserEntity(await this.findUser({id: userID}));
+    }
+
+    async patchUser(userID: string, dto: patchUserDto): Promise<UserEntity> {
+        try {
+            return new UserEntity(await this.prisma.user.update({where: {id: BigInt(`${userID}`)}, data: {...dto}}))
+        } catch (e) {
+            if (e instanceof PrismaClientKnownRequestError) {
+                if (e.code == "P2001") {
+                    throw new NotFoundException("Can't find user with this id")
+                }
+            }
+        }
     }
 
     async findUser(userDto : Partial<UserCredentials>) {

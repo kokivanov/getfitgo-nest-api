@@ -1,15 +1,16 @@
-import { CanActivate, Inject, Injectable, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import { CanActivate, Inject, Injectable, ExecutionContext, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Authorities } from '../enums';
 import { Reflector } from '@nestjs/core';
 import { AUTHORITY_KEY } from '../decorators'
 @Injectable()
 export class AuthorityGuard implements CanActivate {
-    constructor(private prisma: PrismaService, private reflector: Reflector) {
-        
-    }
+
+    constructor(@Inject('PrismaService') private prisma: PrismaService, @Inject(Reflector) private reflector: Reflector | undefined) {    }
 
     async canActivate(context: ExecutionContext) {
+        
+
         const user = await this.prisma.user.findUnique({
             where: {
                 id: BigInt(context.switchToHttp().getRequest().user.sub)

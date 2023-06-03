@@ -28,7 +28,7 @@ export class ID {
                     | (this.content_type & CONTENT_TYPE_MASK)
     }
 
-    static IDFromNumbers(timestamp: number, internal_id: number, content_type: number, incrementer: number) {
+    static IDFromNumbers(timestamp: number, internal_id: number, content_type: number) {
         const _timestamp = BigInt(`${timestamp}`)
         const _internal_id = BigInt(`${internal_id}`)
         const _content_type = BigInt(`${content_type}`)

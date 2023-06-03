@@ -20,7 +20,7 @@ export class AuthController {
             example: {
                 "Public authorization gateways": [
                     "https://www.example.com/local/register",
-                    "https://www.example.com//local/login",
+                    "https://www.example.com/local/login",
                 ]
             }
         }
@@ -28,7 +28,7 @@ export class AuthController {
     @Public()
     @Get()
     async getRoutes(@Req() req: Request) {
-        const base = req.protocol + req.get('Host');
+        const base = req.protocol + '://' + req.get('Host');
 
         return {
             "Public authorization gateways": [

@@ -1,3 +1,6 @@
+import { VitalModule } from './vital/vital.module';
+import { JournalModule } from './journal/journal.module';
+import { BiometryModule } from './biometry/biometry.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -9,6 +12,9 @@ import { PrismaModule } from './prisma/prisma.module';
 @Module({
   providers: [AppService],
   controllers: [AppController],
-  imports: [AuthModule, UserModule, ConfigModule.forRoot({ isGlobal: true}), PrismaModule],
+  imports: [
+    VitalModule,
+    JournalModule,
+    BiometryModule, AuthModule, UserModule, ConfigModule.forRoot({ isGlobal: true }), PrismaModule, BiometryModule],
 })
-export class AppModule {}
+export class AppModule { }

@@ -9,7 +9,7 @@
     "db:test:compose": "docker compose up test-db -d",
     "db:test:reset": "docker compose rm -f -s -v && npm run db:test:compose && npx dotenv -e .env.test -- npx prisma migrate deploy",
     "db:dev:compose": "docker compose up dev-db -d",
-    "db:dev:reset": "docker compose rm -f -s -v && npm run db:dev:compose",
+    "db:dev:reset": "docker compose rm -f -s -v && npm run db:dev:compose && npx dotenv -e .env.dev -- npx prisma migrate deploy",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
