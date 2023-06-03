@@ -1,9 +1,9 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ContentType, ID } from 'src/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { VitalsEntity } from '../common/abs/vitals.object';
+import { VitalsEntity, VitalssEntity } from '../common/abs/';
 import { vitalsDto } from './dto';
 
 @Injectable()
@@ -29,6 +29,7 @@ export class VitalsService {
         } catch (e) {
             if (e instanceof PrismaClientKnownRequestError) {
                 if (e.code == 'P2003') throw new ForbiddenException()
+                if (e.code == 'P2033') throw new BadRequestException()
             }
             throw e
         }
@@ -40,15 +41,39 @@ export class VitalsService {
                 id_author_id: {id: BigInt(id), author_id: BigInt(userId)}
             }})
 
+            if (!res) throw new ForbiddenException()
+
             return new VitalsEntity(res)
         } catch (e) {
             if (e instanceof PrismaClientKnownRequestError) {
                 if (e.code == 'P2025') throw new ForbiddenException()
+                if (e.code == 'P2033') throw new BadRequestException()
             }
         }
 
     }
 
+    async getVitalss(userId : string, page: number, per_page: number) {
+        try {
+
+            const res = await this.prisma.vital.findMany({where: {
+                author_id: BigInt(userId)
+            }, take: per_page, skip: per_page*(page-1)})
+
+            return new VitalssEntity({data: res, meta: {
+                page: page,
+                per_page: per_page,
+                count: res.length,
+                next_page: res.length == per_page ? page+1 : -1
+            }})
+        } catch (e) {
+            if (e instanceof PrismaClientKnownRequestError) {
+                if (e.code == 'P2025') throw new ForbiddenException()
+                if (e.code == 'P2033') throw new BadRequestException()
+            }
+        }
+
+    }
 
     async editVitals(userId : string, id : string, dto : Partial<vitalsDto>) {
         try {
@@ -62,6 +87,7 @@ export class VitalsService {
         } catch (e) {
             if (e instanceof PrismaClientKnownRequestError) {
                 if (e.code == 'P2003') throw new ForbiddenException()
+                if (e.code == 'P2033') throw new BadRequestException()
             }
             throw e
         }
@@ -77,6 +103,7 @@ export class VitalsService {
             return new VitalsEntity(res)
         } catch (e) {
             if (e instanceof PrismaClientKnownRequestError) {
+                if (e.code == 'P2033') throw new BadRequestException()
                 throw new NotFoundException()
             }
             throw e

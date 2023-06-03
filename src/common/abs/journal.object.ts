@@ -1,39 +1,39 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
 
-export class VitalsEntity {
+export class JournalEntity {
     @ApiProperty({
         type: String
     })
     @Transform((v) => v.value.toString())
-    id: bigint
+    id : BigInt
     @ApiProperty({
         type: String
     })
     @Transform((v) => v.value.toString())
-    author_id: bigint
+    author_id : BigInt
     @ApiProperty({
         type: Date
     })
-    created_at: Date
-    @ApiPropertyOptional({
+    created_at : Date
+    @ApiProperty({
         type: Number
     })
-    heartbeat?: number
-    @ApiPropertyOptional({
+    calories_consumed? : number
+    @ApiProperty({
         type: Number
     })
-    pressure?: number
-    @ApiPropertyOptional({
+    calories_burned? : number
+    @ApiProperty({
         type: Number
     })
-    o2level?: number
+    protein_consumed? : number
     @ApiProperty({
         type: Boolean
     })
-    is_public: boolean
+    is_public : boolean
 
-    constructor(partial: Partial<VitalsEntity>) {
+    constructor(partial: Partial<JournalEntity>) {
         Object.assign(this, partial)
     }
 }

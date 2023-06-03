@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ContentType, ID } from 'src/common';
 import { ConfigService } from '@nestjs/config';
@@ -32,6 +32,7 @@ export class BiometryService {
         } catch (e) {
             if (e instanceof PrismaClientKnownRequestError) {
                 if (e.code == 'P2003') throw new ForbiddenException()
+                if (e.code == 'P2033') throw new BadRequestException()
             }
             throw e
         }
@@ -43,10 +44,13 @@ export class BiometryService {
                 id_author_id: {id: BigInt(id), author_id: BigInt(userId)}
             }})
 
+            if (!res) throw new ForbiddenException()
+
             return new BiometryEntity(res)
         } catch (e) {
             if (e instanceof PrismaClientKnownRequestError) {
                 if (e.code == 'P2025') throw new ForbiddenException()
+                if (e.code == 'P2033') throw new BadRequestException()
             }
         }
 
@@ -68,6 +72,7 @@ export class BiometryService {
         } catch (e) {
             if (e instanceof PrismaClientKnownRequestError) {
                 if (e.code == 'P2025') throw new ForbiddenException()
+                if (e.code == 'P2033') throw new BadRequestException()
             }
         }
 
@@ -86,6 +91,7 @@ export class BiometryService {
         } catch (e) {
             if (e instanceof PrismaClientKnownRequestError) {
                 if (e.code == 'P2003') throw new ForbiddenException()
+                if (e.code == 'P2033') throw new BadRequestException()
             }
             throw e
         }
@@ -101,6 +107,7 @@ export class BiometryService {
             return new BiometryEntity(res)
         } catch (e) {
             if (e instanceof PrismaClientKnownRequestError) {
+                if (e.code == 'P2033') throw new BadRequestException()
                 throw new NotFoundException()
             }
             throw e

@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 import { VitalsEntity, GetUser } from 'src/common';
 import { vitalsDto } from './dto';
 import { ApiAcceptedResponse, ApiBearerAuth, ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -28,6 +28,14 @@ export class VitalsController {
         return await this.vitalsService.getVitals(userId, id)
     }
 
+    @ApiResponse({
+        type: VitalsEntity
+    })
+    @UseInterceptors(ClassSerializerInterceptor)
+    @Get()
+    async getVitalss(@GetUser('sub') userId : string, @Query('page') page: number, @Query('per_page') per_page: number) {
+        return await this.vitalsService.getVitalss(userId, page, per_page)
+    }
 
     @ApiAcceptedResponse({
         type: VitalsEntity,

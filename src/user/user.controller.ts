@@ -12,7 +12,7 @@ import { patchUserDto } from './dto';
     version: ['1']
 })
 export class UserController {
-    constructor(private userService : UserService, private prisma: PrismaService) {}
+    constructor(private userService : UserService) {}
 
     @ApiOkResponse({
         type: UserEntity,
@@ -24,7 +24,7 @@ export class UserController {
     @UseInterceptors(ClassSerializerInterceptor)
     @HttpCode(HttpStatus.OK)
     @Get('/me')
-    async getMe(@GetUser('sub') userId: any){
+    async getMe(@GetUser('sub') userId: string){
         return this.userService.getUser(userId)
     }
 

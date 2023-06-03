@@ -15,6 +15,6 @@ import { PrismaModule } from './prisma/prisma.module';
   imports: [
     VitalModule,
     JournalModule,
-    BiometryModule, AuthModule, UserModule, ConfigModule.forRoot({ isGlobal: true }), PrismaModule, BiometryModule],
+    BiometryModule, AuthModule, UserModule, ConfigModule.forRoot({ isGlobal: true }), PrismaModule, BiometryModule, VitalModule],
 })
 export class AppModule { }

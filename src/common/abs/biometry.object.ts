@@ -1,5 +1,4 @@
-import { Role } from ".prisma/client";
-import { Exclude, Transform } from "class-transformer";
+import { Transform } from "class-transformer";
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class BiometryEntity {

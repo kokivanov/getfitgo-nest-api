@@ -1,26 +1,26 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsBoolean, IsNumber, IsOptional } from "class-validator";
 
-export class vitalsDto {
-    @ApiProperty({
+export class journalDto {
+    @ApiPropertyOptional({
         type: Number
     })
     @IsOptional()
     @IsNumber()
-    heartbeat? : number
-    @ApiProperty({
+    calories_consumed? : number
+    @ApiPropertyOptional({
         type: Number
     })
     @IsOptional()
     @IsNumber()
-    pressure? : number
-    @ApiProperty({
+    calories_burned? : number
+    @ApiPropertyOptional({
         type: Number
     })
     @IsOptional()
     @IsNumber()
-    o2level? : number
-    @ApiProperty({
+    protein_consumed? : number
+    @ApiPropertyOptional({
         type: Boolean
     })
     @IsOptional()

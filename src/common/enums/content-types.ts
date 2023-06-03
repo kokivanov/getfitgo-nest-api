@@ -15,7 +15,8 @@ export enum ContentType {
     Reward = 13,
     Biometry = 14,
     Vitals = 15,
-    Payment = 16,
-    Discount = 17,
-    Club_membership = 18,
+    Journal = 16,
+    Payment = 17,
+    Discount = 18,
+    Club_membership = 19,
 }
