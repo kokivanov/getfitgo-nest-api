@@ -1,4 +1,4 @@
-import { VitalModule } from './vital/vital.module';
+import { VitalModule } from './vital/vitals.module';
 import { JournalModule } from './journal/journal.module';
 import { BiometryModule } from './biometry/biometry.module';
 import { Module } from '@nestjs/common';

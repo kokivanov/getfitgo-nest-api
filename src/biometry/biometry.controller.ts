@@ -1,10 +1,6 @@
-/*
-https://docs.nestjs.com/controllers#controllers
-*/
-
 import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, UseGuards, UseInterceptors } from '@nestjs/common';
-import { Authorities, Authority, AuthorityGuard, BiometryEntity, GetUser } from 'src/common';
-import { biometriesDto, biometryDto } from './dto';
+import { BiometryEntity, GetUser } from 'src/common';
+import { biometryDto } from './dto';
 import { ApiAcceptedResponse, ApiBearerAuth, ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BiometryService } from './biometry.service';
 
