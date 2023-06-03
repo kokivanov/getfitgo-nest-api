@@ -2,8 +2,8 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, UseGuards, UseInterceptors } from '@nestjs/common';
-import { Authorities, Authority, AuthorityGuard, BiometryEntity, GetUser } from 'src/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Authorities, Authority, AuthorityGuard, BiometriesEntity, BiometryEntity, GetUser } from 'src/common';
 import { biometriesDto, biometryDto } from './dto';
 import { ApiAcceptedResponse, ApiBearerAuth, ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BiometryService } from './biometry.service';
@@ -30,6 +30,15 @@ export class BiometryController {
     @Get(':id')
     async getBiometry(@GetUser('sub') userId : string, @Param('id') id : string): Promise<BiometryEntity> {
         return await this.biometryService.getBiometry(userId, id)
+    }
+
+    @ApiResponse({
+        type: BiometriesEntity
+    })
+    @UseInterceptors(ClassSerializerInterceptor)
+    @Get()
+    async getBiometries(@GetUser('sub') userId : string, @Query('page') page: number, @Query('per_page') per_page: number) {
+        return await this.biometryService.getBiometries(userId, page, per_page)
     }
 
 

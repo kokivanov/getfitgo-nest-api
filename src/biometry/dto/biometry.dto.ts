@@ -23,7 +23,7 @@ export class biometryDto {
     })
     @IsOptional()
     @Transform((v) => parseInt(v.value))
-    @IsNumberString()
+    @IsNumber()
     fat_percent? : number
     @ApiProperty({
         type: Boolean

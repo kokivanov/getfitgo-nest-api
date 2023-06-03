@@ -3,7 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ContentType, ID } from 'src/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { BiometryEntity } from '../common/abs/biometry.object';
+import { BiometryEntity, BiometriesEntity } from '../common/abs/';
 import { biometryDto } from './dto';
 
 @Injectable()
@@ -44,6 +44,27 @@ export class BiometryService {
             }})
 
             return new BiometryEntity(res)
+        } catch (e) {
+            if (e instanceof PrismaClientKnownRequestError) {
+                if (e.code == 'P2025') throw new ForbiddenException()
+            }
+        }
+
+    }
+
+    async getBiometries(userId : string, page: number, per_page: number) {
+        try {
+
+            const res = await this.prisma.biometry.findMany({where: {
+                author_id: BigInt(userId)
+            }, take: per_page, skip: per_page*(page-1)})
+
+            return new BiometriesEntity({data: res, meta: {
+                page: page,
+                per_page: per_page,
+                count: res.length,
+                next_page: res.length == per_page ? page+1 : -1
+            }})
         } catch (e) {
             if (e instanceof PrismaClientKnownRequestError) {
                 if (e.code == 'P2025') throw new ForbiddenException()
